@@ -4,7 +4,7 @@ import { test } from "../src/utils/testHelper.js";
 import { setSettingValue } from "../src/utils/settingsUtils.js";
 
 setSettingValue("debug", true);
-setSettingValue("colordDebugMessages", false);
+setSettingValue("colordDebugMessages", true);
 
 // synchronous test
 test("emit calls listener", (t) => {
@@ -54,4 +54,21 @@ test("off removes listener", (done) => {
   } catch (err) {
     done(err as Error);
   }
+});
+
+// max event warning test
+test("max event warning displays", async () => {
+  const bus = createBus();
+  let result
+  let index = 0;
+
+  for(index > 32; index++) {
+    bus.on("add", async (n: number) => {
+      await new Promise((res) => setTimeout(res, 10));
+      result = n + 1;
+    });
+  }
+
+  await bus.emit("add", 1);
+  assert.strictEqual(result, 32);
 });
