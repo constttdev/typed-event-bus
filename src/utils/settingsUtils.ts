@@ -14,6 +14,11 @@ const SETTINGS = [
     defaultValue: true,
     description: "Enables verbose logging",
   },
+  {
+    name: "maxEventWarning",
+    defaultValue: 32,
+    description: "Displays an warning when having too many registered events",
+  },
 ] as const;
 
 type SettingName = (typeof SETTINGS)[number]["name"];

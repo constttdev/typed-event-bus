@@ -1,4 +1,4 @@
-import { sendDefault, sendSuccess } from "./utils/consoleUtils.js";
+import { sendDefault, sendSuccess, sendWarning } from "./utils/consoleUtils.js";
 import { getSetting } from "./utils/settingsUtils.js";
 
 export function createBus() {
@@ -59,6 +59,15 @@ export function createBus() {
       off(event, wrapper); // remove wrapper after first call
     };
     on(event, wrapper);
+
+    // max event waring
+    const count = listeners[event]?.length || 0;
+
+    if (count > getSetting("maxEventWarning")?.value) {
+      sendWarning(
+        `WARNING: MAX EVENTS REACHED | CURRENT NUMBER OF EVENT: ${listeners.lenght} (TO INCREASE THE VALUE OF THE WARNING PLEASE EDIT THE "maxEventWarning" SETTING)`,
+      );
+    }
 
     if (getSetting("debug")?.value == true) {
       if (getSetting("colordDebugMessages")?.value == true) {
