@@ -75,4 +75,54 @@ test("max event warning displays", async () => {
   assert.strictEqual(calls, 33);
 });
 
-// add on one event crash, crash everything test
+// exection order is deterministic
+test("execution order is deterministic", async () => {
+  const bus = createBus();
+  const order: number[] = [];
+
+  bus.on("event", () => {
+    order.push(1);
+  });
+  bus.on("event", () => {
+    order.push(2);
+  });
+  bus.on("event", () => {
+    order.push(3);
+  });
+
+  await bus.emit("event");
+
+  assert.deepStrictEqual(order, [1, 2, 3]);
+});
+
+// one listener crash breaks all listeners
+test("one listener crash breaks all listeners", async () => {
+  const bus = createBus();
+  let calls = 0;
+
+  bus.on("event", () => {
+    throw new Error("boom");
+  });
+
+  bus.on("event", () => {
+    calls++;
+  });
+
+  bus.on("event", async () => {
+    await new Promise((res) => setTimeout(res, 10));
+    calls++;
+  });
+
+  let threw = false;
+
+  try {
+    await bus.emit("event");
+  } catch {
+    threw = true;
+  }
+
+  assert.strictEqual(threw, true);
+
+  // depending on implementation, this should be 0
+  assert.strictEqual(calls, 0);
+});

@@ -47,10 +47,8 @@ export function createBus() {
     const normal = listeners[event] || [];
     const wildcard = listeners["*"] || [];
 
-    const run = (fn: (data?: any) => void | Promise<void>) =>
-      Promise.resolve().then(() => fn(data));
-
-    await Promise.all([...normal.map(run), ...wildcard.map(run)]);
+    for (let i = 0; i < normal.length; i++) normal[i](data); // Cannot invoke an object which is possibly 'undefined'.
+    for (let i = 0; i < wildcard.length; i++) wildcard[i](data); // Cannot invoke an object which is possibly 'undefined'.
 
     if (getSetting("debug")?.value == true) {
       if (getSetting("colordDebugMessages")?.value == true) {
