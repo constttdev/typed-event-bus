@@ -5,17 +5,18 @@ import { setSettingValue } from "../src/utils/settingsUtils.js";
 
 setSettingValue("debug", false);
 setSettingValue("colordDebugMessages", false);
-setSettingValue("maxEventWarning", 32); // 32 IS ALREADY DEFAULT VALUE
+// setSettingValue("maxEventWarning", 32); // 32 IS ALREADY DEFAULT VALUE
 
 // synchronous test
-test("emit calls listener", (t) => {
+test("emit calls listener", async () => {
   const bus = createBus();
   let called = false;
 
   bus.on("login", () => {
     called = true;
   });
-  bus.emit("login");
+
+  await bus.emit("login");
 
   assert.strictEqual(called, true);
 });
