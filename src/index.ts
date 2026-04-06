@@ -44,14 +44,14 @@ export function createBus() {
   } // off event function
 
   async function emit(event: string, data?: any) {
-    const normal = listeners[event] || [];
-    const wildcard = listeners["*"] || [];
+    const normal = listeners[event] ?? [];
+    const wildcard = listeners["*"] ?? [];
 
-    for (let i = 0; i < normal.length; i++) normal[i](data); // Cannot invoke an object which is possibly 'undefined'.
-    for (let i = 0; i < wildcard.length; i++) wildcard[i](data); // Cannot invoke an object which is possibly 'undefined'.
+    for (let i = 0; i < normal.length; i++) normal[i]!(data); // '!' tells TS it's defined
+    for (let i = 0; i < wildcard.length; i++) wildcard[i]!(data);
 
-    if (getSetting("debug")?.value == true) {
-      if (getSetting("colordDebugMessages")?.value == true) {
+    if (getSetting("debug")?.value) {
+      if (getSetting("colordDebugMessages")?.value) {
         sendSuccess(`DEBUG: EMITTED EVENT | ${event}`);
       } else {
         sendDefault(`DEBUG: EMITTED EVENT | ${event}`);

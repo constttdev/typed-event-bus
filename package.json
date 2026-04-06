@@ -1,6 +1,6 @@
 {
-  "name": "typed-event-bus",
-  "version": "0.0.1",
+  "name": "typed-event-bus-redone",
+  "version": "1.0.0",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -15,7 +15,9 @@
     "chalk": "^5.6.2",
     "cli-table3": "^0.6.5",
     "events": "^3.3.0",
-    "perf_hooks": "^0.0.1"
+    "perf_hooks": "^0.0.1",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.2"
   },
   "devDependencies": {
     "@types/assert": "^1.5.11"
