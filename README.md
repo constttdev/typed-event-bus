@@ -4,6 +4,12 @@
 
 A typed event bus that adds types, warnings and settings as a typed version of the already exsisting Event Bus from node.js
 
+## Try it Online
+
+You can test **typed-event-bus-redone** directly in your browser using StackBlitz:
+
+[Open in StackBlitz](https://stackblitz.com/edit/node-u7xssdzz?file=index.js)
+
 ## Installation
 
 Install typed-event-bus with npm
