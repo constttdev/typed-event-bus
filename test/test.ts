@@ -3,8 +3,9 @@ import { createBus } from "../src/index.js";
 import { test } from "../src/utils/testHelper.js";
 import { setSettingValue } from "../src/utils/settingsUtils.js";
 
-setSettingValue("debug", true);
-setSettingValue("colordDebugMessages", true);
+setSettingValue("debug", false);
+setSettingValue("colordDebugMessages", false);
+setSettingValue("maxEventWarning", 32); // 32 IS ALREADY DEFAULT VALUE
 
 // synchronous test
 test("emit calls listener", (t) => {
@@ -59,16 +60,18 @@ test("off removes listener", (done) => {
 // max event warning test
 test("max event warning displays", async () => {
   const bus = createBus();
-  let result
-  let index = 0;
+  let calls = 0;
 
-  for(index > 32; index++) {
-    bus.on("add", async (n: number) => {
+  for (let i = 0; i < 33; i++) {
+    bus.on("add", async () => {
       await new Promise((res) => setTimeout(res, 10));
-      result = n + 1;
+      calls++;
     });
   }
 
-  await bus.emit("add", 1);
-  assert.strictEqual(result, 32);
+  await bus.emit("add");
+
+  assert.strictEqual(calls, 33);
 });
+
+// add on one event crash, crash everything test
