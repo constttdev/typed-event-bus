@@ -19,6 +19,15 @@ export function createBus() {
     }
 
     listeners[event].push(fn);
+
+    const count = listeners[event].length;
+    const max = getSetting("maxEventWarning")?.value ?? 32;
+
+    if (count > max) {
+      sendWarning(
+        `WARNING: MAX EVENTS REACHED | CURRENT NUMBER OF EVENT: ${count} (TO INCREASE THE VALUE OF THE WARNING PLEASE EDIT THE "maxEventWarning" SETTING)`,
+      );
+    }
   } // on event function
 
   function off(event: string, fn: (data?: any) => void | Promise<void>) {
@@ -38,11 +47,10 @@ export function createBus() {
     const normal = listeners[event] || [];
     const wildcard = listeners["*"] || [];
 
-    if (!listeners[event]) return;
-    // use Promise.all to wait for all listeners
-    await Promise.all(listeners[event].map((fn) => fn(data)));
+    const run = (fn: (data?: any) => void | Promise<void>) =>
+      Promise.resolve().then(() => fn(data));
 
-    await Promise.all(wildcard.map((fn) => fn(data)));
+    await Promise.all([...normal.map(run), ...wildcard.map(run)]);
 
     if (getSetting("debug")?.value == true) {
       if (getSetting("colordDebugMessages")?.value == true) {
@@ -51,7 +59,7 @@ export function createBus() {
         sendDefault(`DEBUG: EMITTED EVENT | ${event}`);
       }
     }
-  } // emit an event
+  }
 
   function once(event: string, fn: (data?: any) => void | Promise<void>) {
     const wrapper = async (data?: any) => {
@@ -59,15 +67,6 @@ export function createBus() {
       off(event, wrapper); // remove wrapper after first call
     };
     on(event, wrapper);
-
-    // max event waring
-    const count = listeners[event]?.length || 0;
-
-    if (count > getSetting("maxEventWarning")?.value) {
-      sendWarning(
-        `WARNING: MAX EVENTS REACHED | CURRENT NUMBER OF EVENT: ${listeners.lenght} (TO INCREASE THE VALUE OF THE WARNING PLEASE EDIT THE "maxEventWarning" SETTING)`,
-      );
-    }
 
     if (getSetting("debug")?.value == true) {
       if (getSetting("colordDebugMessages")?.value == true) {
